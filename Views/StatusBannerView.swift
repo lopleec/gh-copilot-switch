@@ -1,8 +1,13 @@
 import SwiftUI
 
 struct StatusBannerView: View {
+    @Environment(AppSettingsStore.self) private var settings
     let status: StatusMessage
     let onDismiss: () -> Void
+
+    private var localizer: AppLocalizer {
+        settings.localizer
+    }
 
     var body: some View {
         HStack(alignment: .top, spacing: 10) {
@@ -22,6 +27,8 @@ struct StatusBannerView: View {
             }
             .buttonStyle(.plain)
             .foregroundStyle(.secondary)
+            .accessibilityLabel(localizer.string(.dismissStatusBanner))
+            .accessibilityHint(localizer.string(.dismissStatusBannerHint))
         }
         .frame(maxWidth: 420, alignment: .leading)
         .padding(.horizontal, 12)

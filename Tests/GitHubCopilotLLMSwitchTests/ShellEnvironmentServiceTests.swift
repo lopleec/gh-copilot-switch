@@ -100,6 +100,49 @@ final class ShellEnvironmentServiceTests: XCTestCase {
         XCTAssertFalse(contents.contains("export COPILOT_MODEL"))
     }
 
+    func testApplyPreservesLeadingWhitespaceAndNewlinesOutsideManagedBlock() throws {
+        let fileURL = try makeTemporaryFile()
+        let originalContents = """
+
+
+        # Existing shell setup
+        export PATH="$HOME/.local/bin:$PATH"
+        """
+        try originalContents.write(to: fileURL, atomically: true, encoding: .utf8)
+
+        let service = ShellEnvironmentService()
+        try service.apply(
+            profile: sampleProfile(),
+            apiKey: "test-api-key",
+            configuration: makeConfiguration(fileURL: fileURL)
+        )
+
+        let contents = try String(contentsOf: fileURL, encoding: .utf8)
+
+        XCTAssertTrue(
+            contents.hasPrefix(
+                "\n\n# Existing shell setup\nexport PATH=\"$HOME/.local/bin:$PATH\"\n\n"
+            )
+        )
+        XCTAssertTrue(contents.contains(AppConstants.managedBlockStart))
+    }
+
+    func testPosixSyntaxEscapesExclamationMarks() throws {
+        let fileURL = try makeTemporaryFile()
+        let service = ShellEnvironmentService()
+
+        try service.apply(
+            profile: sampleProfile(model: "gpt!4o"),
+            apiKey: "bang!key",
+            configuration: makeConfiguration(fileURL: fileURL)
+        )
+
+        let contents = try String(contentsOf: fileURL, encoding: .utf8)
+
+        XCTAssertTrue(contents.contains(#"export COPILOT_PROVIDER_API_KEY="bang\!key""#))
+        XCTAssertTrue(contents.contains(#"export COPILOT_MODEL="gpt\!4o""#))
+    }
+
     private func makeTemporaryFile() throws -> URL {
         let directoryURL = FileManager.default.temporaryDirectory
             .appendingPathComponent(UUID().uuidString, isDirectory: true)

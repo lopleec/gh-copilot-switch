@@ -127,7 +127,7 @@ final class ShellEnvironmentService {
             strippedContents.removeSubrange(startRange.lowerBound..<removalUpperBound)
         }
 
-        let normalizedBase = strippedContents.trimmingCharacters(in: .whitespacesAndNewlines)
+        let normalizedBase = trimmingTrailingWhitespaceAndNewlines(from: strippedContents)
 
         guard let replacement else {
             return normalizedBase.isEmpty ? "" : normalizedBase + "\n"
@@ -158,8 +158,29 @@ final class ShellEnvironmentService {
             .replacingOccurrences(of: "\\", with: "\\\\")
             .replacingOccurrences(of: "\"", with: "\\\"")
             .replacingOccurrences(of: "$", with: "\\$")
+            .replacingOccurrences(of: "!", with: "\\!")
             .replacingOccurrences(of: "`", with: "\\`")
             .replacingOccurrences(of: "\n", with: "")
+    }
+
+    private func trimmingTrailingWhitespaceAndNewlines(from value: String) -> String {
+        var endIndex = value.endIndex
+
+        while endIndex > value.startIndex {
+            let previousIndex = value.index(before: endIndex)
+            let character = value[previousIndex]
+            let isTrailingWhitespace = character.unicodeScalars.allSatisfy {
+                CharacterSet.whitespacesAndNewlines.contains($0)
+            }
+
+            guard isTrailingWhitespace else {
+                break
+            }
+
+            endIndex = previousIndex
+        }
+
+        return String(value[..<endIndex])
     }
 
     private func maskedValue(for value: String) -> String {

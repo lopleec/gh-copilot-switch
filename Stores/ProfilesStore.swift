@@ -59,7 +59,7 @@ final class ProfilesStore {
                 draft: ProfileDraft(profile: selectedProfile, apiKey: apiKey)
             )
         } catch {
-            status = .error(localizer.string(.statusReadAPIKeyFailedFormat, error.localizedDescription))
+            status = .error(localizer.string(.statusReadAPIKeyFailedFormat, userFacingMessage(for: error)))
         }
     }
 
@@ -123,7 +123,7 @@ final class ProfilesStore {
 
             editorRequest = nil
         } catch {
-            status = .error(localizer.string(.statusSaveFailedFormat, error.localizedDescription))
+            status = .error(localizer.string(.statusSaveFailedFormat, userFacingMessage(for: error)))
         }
     }
 
@@ -156,7 +156,7 @@ final class ProfilesStore {
             try persist()
             status = .info(localizer.string(.statusManagedConfigRemovedFormat, removedPath))
         } catch {
-            status = .error(localizer.string(.statusDeactivateFailedFormat, error.localizedDescription))
+            status = .error(localizer.string(.statusDeactivateFailedFormat, userFacingMessage(for: error)))
         }
     }
 
@@ -215,7 +215,7 @@ final class ProfilesStore {
             try persist()
             status = .success(localizer.string(.statusAppliedProfileFormat, profiles[index].name, currentManagedFilePath))
         } catch {
-            status = .error(localizer.string(.statusApplyFailedFormat, error.localizedDescription))
+            status = .error(localizer.string(.statusApplyFailedFormat, userFacingMessage(for: error)))
         }
     }
 
@@ -244,7 +244,7 @@ final class ProfilesStore {
             try persist()
             status = .info(localizer.string(.statusProfileDeleted))
         } catch {
-            status = .error(localizer.string(.statusDeleteFailedFormat, error.localizedDescription))
+            status = .error(localizer.string(.statusDeleteFailedFormat, userFacingMessage(for: error)))
         }
     }
 
@@ -262,8 +262,16 @@ final class ProfilesStore {
 
             selectedProfileID = profiles.first?.id
         } catch {
-            status = .error(localizer.string(.statusLoadFailedFormat, error.localizedDescription))
+            status = .error(localizer.string(.statusLoadFailedFormat, userFacingMessage(for: error)))
         }
+    }
+
+    private func userFacingMessage(for error: Error) -> String {
+        if let keychainError = error as? KeychainServiceError {
+            return keychainError.userMessage(using: localizer)
+        }
+
+        return error.localizedDescription
     }
 
     private func profile(withID profileID: ProviderProfile.ID) -> ProviderProfile? {

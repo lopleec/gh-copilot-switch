@@ -1,17 +1,18 @@
 import Foundation
 import Security
 
-enum KeychainServiceError: LocalizedError {
+enum KeychainServiceError: Error {
     case unexpectedStatus(OSStatus)
     case invalidData
 
-    var errorDescription: String? {
+    func userMessage(using localizer: AppLocalizer) -> String {
         switch self {
         case .unexpectedStatus(let status):
-            let message = SecCopyErrorMessageString(status, nil) as String? ?? "未知错误"
-            return "钥匙串操作失败：\(message) (\(status))"
+            let message = SecCopyErrorMessageString(status, nil) as String?
+                ?? localizer.string(.keychainUnknownError)
+            return localizer.string(.keychainUnexpectedStatusFormat, message, Int(status))
         case .invalidData:
-            return "钥匙串返回了无法识别的 API Key 数据。"
+            return localizer.string(.keychainInvalidData)
         }
     }
 }
