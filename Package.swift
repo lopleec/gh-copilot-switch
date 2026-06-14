@@ -18,6 +18,8 @@ let package = Package(
             name: "GitHubCopilotLLMSwitch",
             path: ".",
             exclude: [
+                "dist",
+                "LICENSE",
                 "README.md",
                 "Tests",
                 "script",

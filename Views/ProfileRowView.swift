@@ -10,6 +10,12 @@ struct ProfileRowView: View {
         settings.localizer
     }
 
+    private var toggleHelpText: String {
+        isActive
+            ? localizer.string(.toggleDeactivateHelp)
+            : localizer.string(.toggleActivateHelp)
+    }
+
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: profile.providerType.iconName)
@@ -40,11 +46,9 @@ struct ProfileRowView: View {
             }
             .labelsHidden()
             .toggleStyle(.switch)
-            .help(
-                isActive
-                    ? localizer.string(.toggleDeactivateHelp)
-                    : localizer.string(.toggleActivateHelp)
-            )
+            .help(toggleHelpText)
+            .accessibilityLabel(profile.name)
+            .accessibilityHint(toggleHelpText)
         }
     }
 }

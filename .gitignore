@@ -1,6 +1,7 @@
 .DS_Store
 /.build
-/dist
+/dist/*
+!/dist/.gitkeep
 /.codex/
 /Packages
 xcuserdata/

@@ -85,10 +85,15 @@ enum AppCopy {
 
     case toggleDeactivateHelp
     case toggleActivateHelp
+    case dismissStatusBanner
+    case dismissStatusBannerHint
 
     case providerOpenAICompatible
     case providerAzureOpenAI
     case providerAnthropic
+    case keychainUnexpectedStatusFormat
+    case keychainUnknownError
+    case keychainInvalidData
 
     case statusReadAPIKeyFailedFormat
     case statusProfileAdded
@@ -275,12 +280,22 @@ struct AppLocalizer {
                 return "关闭后会清除当前受管 shell 配置"
             case .toggleActivateHelp:
                 return "打开后会把这个配置写入当前受管文件"
+            case .dismissStatusBanner:
+                return "关闭提示"
+            case .dismissStatusBannerHint:
+                return "关闭这条状态提示"
             case .providerOpenAICompatible:
                 return "OpenAI Compatible"
             case .providerAzureOpenAI:
                 return "Azure OpenAI"
             case .providerAnthropic:
                 return "Anthropic"
+            case .keychainUnexpectedStatusFormat:
+                return "钥匙串操作失败：%@ (%d)"
+            case .keychainUnknownError:
+                return "未知错误"
+            case .keychainInvalidData:
+                return "钥匙串返回了无法识别的 API Key 数据。"
             case .statusReadAPIKeyFailedFormat:
                 return "无法读取当前配置的 API Key：%@"
             case .statusProfileAdded:
@@ -463,12 +478,22 @@ struct AppLocalizer {
                 return "Turn off to remove the current managed shell configuration."
             case .toggleActivateHelp:
                 return "Turn on to write this profile into the current managed file."
+            case .dismissStatusBanner:
+                return "Dismiss status"
+            case .dismissStatusBannerHint:
+                return "Dismiss this status message."
             case .providerOpenAICompatible:
                 return "OpenAI Compatible"
             case .providerAzureOpenAI:
                 return "Azure OpenAI"
             case .providerAnthropic:
                 return "Anthropic"
+            case .keychainUnexpectedStatusFormat:
+                return "Keychain operation failed: %@ (%d)"
+            case .keychainUnknownError:
+                return "Unknown error"
+            case .keychainInvalidData:
+                return "The Keychain returned unreadable API key data."
             case .statusReadAPIKeyFailedFormat:
                 return "Failed to read the API key: %@"
             case .statusProfileAdded:
